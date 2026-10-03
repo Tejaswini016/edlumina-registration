@@ -61,7 +61,7 @@
       fields: [
         { type: "radio", name: "demo", entry: "1510953061", label: "Would you like to book a FREE Demo / Counselling Session?", required: true, cta: true,
           options: opts(["Yes, I would like to book. Please contact me with details", "I would like more information first"]) },
-        { type: "textarea", name: "special", entry: "1159529347", label: "What makes your child special among a group of students?", required: true, min: 3, max: 1000,
+        { type: "textarea", name: "special", entry: "1159529347", label: "What makes your child special among a group of students?", required: false, min: 3, max: 1000,
           placeholder: "Their curiosity, a hobby, something they love building or asking about…" },
         { type: "checkbox", name: "confirm", entry: "1484795398", label: "Confirmation", required: true, confirm: true, srLabel: true,
           requiredMessage: "Please tick the box to confirm your details.",

@@ -156,12 +156,22 @@ const t = async (name, fn) => { try { await fn(); results.push(["PASS", name]); 
     assert.strictEqual(smtp.state.messages.length, before);
   });
   await t("every required field is enforced", async () => {
-    for (const k of ["phone", "location", "child", "age", "grade", "school", "interest", "experience", "program", "days", "start", "demo", "special", "confirm"]) {
+    for (const k of ["phone", "location", "child", "age", "grade", "school", "interest", "experience", "program", "days", "start", "demo", "confirm"]) {
       const b = { ...GOOD }; delete b[k];
       const r = await a.post(b);
       assert.strictEqual(r.status, 400, k + " not enforced");
       assert(r.json.fields[k], k + " not flagged");
     }
+  });
+  await t("'What makes your child special' is optional: blank is accepted, text still sanitised", async () => {
+    const before = smtp.state.messages.length;
+    const blank = await a.post({ ...GOOD, special: "" });
+    assert.strictEqual(blank.status, 200);
+    assert.strictEqual(smtp.state.messages.length, before + 1);
+    assert(msg().body.includes("What makes the child special"));
+    const missing = { ...GOOD }; delete missing.special;
+    assert.strictEqual((await a.post(missing)).status, 200);
+    assert.strictEqual((await a.post({ ...GOOD, special: "ab" })).status, 400);
   });
   await t("malformed JSON -> 400", async () => assert.strictEqual((await a.post(null, {}, "{not json")).status, 400));
   await t("honeypot -> fake success, no email", async () => {
