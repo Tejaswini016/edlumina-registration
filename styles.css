@@ -176,8 +176,10 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 .pcard:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--amber); }
 .pcard__ic { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: var(--navy); color: var(--amber); margin-bottom: 14px; }
 .pcard__ic svg { width: 26px; height: 26px; }
-.pcard h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-.pcard p { margin: 0; color: var(--muted); font-size: 14.5px; }
+.pcard h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+.pcard__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.pcard__list li { position: relative; padding-left: 22px; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+.pcard__list li::before { content: ""; position: absolute; left: 0; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--amber); }
 
 /* journey */
 .path { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; position: relative; }
