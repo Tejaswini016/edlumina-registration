@@ -65,10 +65,10 @@ function parseMessage(raw) {
 }
 
 const GOOD = {
-  parent: "Test Parent", phone: "+91 98765 43210", email: "test@example.com", location: "Kukatpally",
+  phone: "+91 98765 43210", location: "Kukatpally",
   child: "Test Student", age: "11–12 Years", grade: "Grade 6", school: "Test School",
-  interest: ["Robotics"], experience: "Not sure", looking: "Hands-on skills",
-  program: "Weekend Program", days: ["Sunday"], time: "Sunday", start: "Immediately",
+  interest: ["Robotics"], experience: "Not sure",
+  program: "Weekend Program", days: ["Sunday"], start: "Immediately",
   demo: "Yes, I would like to book. Please contact me with details", special: "Very curious",
   confirm: ["I confirm that the information provided above is accurate and is being submitted for registration purposes only."],
   website: "",
@@ -113,21 +113,27 @@ const t = async (name, fn) => { try { await fn(); results.push(["PASS", name]); 
     assert.strictEqual(msg().headers.to, "inbox@example.com");
     assert(smtp.state.messages[0].rcpt.join().includes("inbox@example.com"));
   });
-  await t("Reply-To is the parent's email", () => assert.strictEqual(msg().headers["reply-to"], "test@example.com"));
+  await t("no Reply-To header (no email address is collected any more)", () => assert.strictEqual(msg().headers["reply-to"], undefined));
   await t("subject is 'New EdLumina Excellence Centre Registration – Test Student'", () =>
     assert.strictEqual(msg().headers.subject, "New EdLumina Excellence Centre Registration – Test Student"));
   await t("HTML email has header, all 6 sections, values and timestamp", () => {
     const b = msg().body;
-    for (const s of ["EDLUMINA EXCELLENCE CENTRE", "New Registration / Demo Enquiry", "Parent / Guardian Details", "Child Details", "Learning Interests",
+    for (const s of ["EDLUMINA EXCELLENCE CENTRE", "New Registration / Demo Enquiry", "Contact Details", "Child Details", "Learning Interests",
       "Program Preferences", "Demo / Counselling", "Additional Information", "Submission date", "IST", "9876543210", "Test Student", "Grade 6", "Test School", "Weekend Program", "Very curious"])
       assert(b.includes(s), "missing: " + s);
   });
   await t("SMTP password is not in the email", () => {
     assert(!smtp.state.messages[0].raw.includes(SMTP_PASS));
   });
-  await t("no email address -> message has no Reply-To", async () => {
-    await a.post({ ...GOOD, email: "" });
+  await t("removed questions are gone from the email and ignored if sent", async () => {
+    await a.post({ ...GOOD, parent: "Old Parent", email: "old@example.com", looking: "Old text", time: "Sunday" });
+    const b = msg().body;
+    for (const s of ["Parent Name", "Parent Requirement", "Preferred Time", "Old Parent", "old@example.com", "Old text"]) assert(!b.includes(s), "still present: " + s);
     assert.strictEqual(msg().headers["reply-to"], undefined);
+  });
+  await t("Monday–Friday is no longer accepted for Preferred Days", async () => {
+    const r = await a.post({ ...GOOD, days: ["Monday–Friday"] });
+    assert.strictEqual(r.status, 400); assert(r.json.fields.days);
   });
   await t("HTML in user input is escaped", async () => {
     await a.post({ ...GOOD, child: "<script>alert(1)</script>", special: "<img src=x onerror=alert(1)>" });
@@ -135,12 +141,6 @@ const t = async (name, fn) => { try { await fn(); results.push(["PASS", name]); 
     assert(b.length > 500, "html part not found");
     assert(!b.includes("<script>") && !b.includes("<img"));
     assert(b.includes("&lt;script&gt;"));
-  });
-  await t("header injection via email field -> 400, nothing sent", async () => {
-    const before = smtp.state.messages.length;
-    const r = await a.post({ ...GOOD, email: "a@b.com\r\nBcc: evil@x.com" });
-    assert.strictEqual(r.status, 400);
-    assert.strictEqual(smtp.state.messages.length, before);
   });
   await t("newline in child name cannot inject headers", async () => {
     await a.post({ ...GOOD, child: "Aarav\r\nBcc: evil@x.com" });
@@ -156,7 +156,7 @@ const t = async (name, fn) => { try { await fn(); results.push(["PASS", name]); 
     assert.strictEqual(smtp.state.messages.length, before);
   });
   await t("every required field is enforced", async () => {
-    for (const k of ["parent", "phone", "location", "child", "age", "grade", "school", "interest", "experience", "looking", "program", "days", "time", "start", "demo", "special", "confirm"]) {
+    for (const k of ["phone", "location", "child", "age", "grade", "school", "interest", "experience", "program", "days", "start", "demo", "special", "confirm"]) {
       const b = { ...GOOD }; delete b[k];
       const r = await a.post(b);
       assert.strictEqual(r.status, 400, k + " not enforced");

@@ -12,16 +12,6 @@
 
   var STEPS = [
     {
-      title: "Parent / Guardian",
-      sub: "Who should our team contact?",
-      fields: [
-        text("parent", "581631669", "Parent / Guardian Name", { autocomplete: "name", placeholder: "e.g. Lakshmi Reddy", min: 2 }),
-        text("phone", "341443992", "WhatsApp / Mobile Number", { kind: "tel", autocomplete: "tel", placeholder: "10-digit mobile number", hint: "We'll use this to share batch and fee details." }),
-        text("email", "711577352", "Email Address", { kind: "email", required: false, autocomplete: "email", placeholder: "name@example.com" }),
-        text("location", "826228673", "Your Location / Area", { autocomplete: "address-level2", placeholder: "e.g. Kukatpally, KPHB, Miyapur", min: 2 }),
-      ],
-    },
-    {
       title: "Child Details",
       sub: "A little about your child.",
       fields: [
@@ -31,6 +21,8 @@
         { type: "radio", name: "grade", entry: "1100014072", label: "Current Grade", required: true, cols: 3,
           options: opts(["Grade 3", "Grade 4", "Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12"]) },
         text("school", "636183633", "School Name", { placeholder: "Your child's school", min: 2 }),
+        text("phone", "341443992", "WhatsApp / Mobile Number", { kind: "tel", autocomplete: "tel", placeholder: "10-digit mobile number", hint: "We'll use this to share batch and fee details." }),
+        text("location", "826228673", "Your Location / Area", { autocomplete: "address-level2", placeholder: "e.g. Kukatpally, KPHB, Miyapur", min: 2 }),
       ],
     },
     {
@@ -49,8 +41,6 @@
           ] },
         { type: "radio", name: "experience", entry: "742791358", label: "Has your child participated in Coding, Robotics or AI programs before?", required: true,
           options: opts(["Yes, regularly", "Yes, a few times", "No, this would be their first experience", "Not sure"]) },
-        { type: "textarea", name: "looking", entry: "796026228", label: "What are you mainly looking for for your child?", required: true, min: 3, max: 1000,
-          placeholder: "e.g. building confidence, hands-on skills, preparing for future careers…" },
       ],
     },
     {
@@ -59,11 +49,8 @@
       fields: [
         { type: "radio", name: "program", entry: "1612402667", label: "Which program would you prefer?", required: true,
           options: opts(["After-School Program", "Weekend Program", "Either — Based on Availability", "Not Sure — Please Suggest"]) },
-        { type: "checkbox", name: "days", entry: "86517794", label: "Preferred Days", required: true, cols: 2, hint: "Choose all that apply.",
-          options: opts(["Monday–Friday", "Sunday"]) },
-        { type: "radio", name: "time", entry: "310165235", label: "Preferred Time", required: true,
-          hint: "Weekday batches run after school; the Sunday option is for weekend batches.",
-          options: opts(["After School – 4 PM to 6 PM", "Evening – 6 PM to 8 PM", "Sunday"]) },
+        { type: "checkbox", name: "days", entry: "86517794", label: "Preferred Days", required: true, cols: 2,
+          options: opts(["Sunday"]) },
         { type: "radio", name: "start", entry: "1575758133", label: "When are you planning to start?", required: true,
           options: opts(["Immediately", "Within 1–2 weeks", "Just exploring for now"]) },
       ],

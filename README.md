@@ -1,7 +1,7 @@
 # EdLumina registration (runs locally)
 
 Landing page and multi-step registration form for EdLumina Excellence Centre. Each submission is emailed to the
-centre through SMTP.
+centre through SMTP. The form collects the child's details, the contact number and location, interests, program, Sunday preference and start date.
 
 ```
 Browser form (public/)  ->  POST /api/register (server.js, Express)  ->  Nodemailer  ->  SMTP server  ->  EdLumina inbox
@@ -41,7 +41,7 @@ The success screen is shown only after the SMTP server has accepted the email.
 8. Fill in the form and click **Register Your Interest**.
 9. The terminal prints `Registration emailed for <child name>`. A failure prints the reason (never the password).
 10. Check the receiver inbox (and spam) for "New EdLumina Excellence Centre Registration – <child>".
-11. Click **Reply** in the email: the To field must be the parent's email address.
+11. The form no longer collects an email address, so the email has no Reply-To. Call or WhatsApp the number shown in the email.
 12. **Test bad credentials:** change `SMTP_PASS` in `.env`, restart, submit the form.
 13. The page must show "Something went wrong while submitting your registration. Please try again." and **not** the
     success screen. The terminal shows `EAUTH`. Put the right password back and restart.
