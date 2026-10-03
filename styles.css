@@ -187,6 +187,11 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 .path__n { position: absolute; left: 18px; top: 18px; width: 40px; height: 40px; border-radius: 50%; background: var(--amber); color: var(--navy); display: grid; place-items: center; font-weight: 800; }
 .path h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
 .path p { margin: 0; color: var(--muted); font-size: 14.5px; }
+.path li, .path__n, .path h3, .path p { transition: background .25s, border-color .25s, color .25s, transform .25s, box-shadow .25s; }
+.path li:hover { background: var(--navy); border-color: var(--navy); transform: translateY(-6px); box-shadow: var(--shadow); }
+.path li:hover h3 { color: var(--amber); }
+.path li:hover p { color: var(--mist); }
+.path li:hover .path__n { background: var(--white); color: var(--navy); box-shadow: 0 0 0 5px rgba(232, 160, 32, .45); }
 
 /* how it works */
 .how { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
