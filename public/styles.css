@@ -102,6 +102,10 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
   background: var(--white); color: var(--navy); font: 500 16px/1.4 var(--body); transition: border-color .15s, box-shadow .15s;
 }
 .textarea { min-height: 108px; resize: vertical; }
+.select { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 46px;
+  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23071c3f' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center / 18px; }
+.select:invalid, .select:has(option[value=""]:checked) { color: #98a6b8; }
+.select option { color: var(--navy); }
 .input::placeholder, .textarea::placeholder { color: #98a6b8; }
 .input:hover, .textarea:hover { border-color: var(--slate); }
 .input:focus, .textarea:focus { outline: none; border-color: var(--amber); box-shadow: 0 0 0 4px rgba(232, 160, 32, .25); }

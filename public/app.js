@@ -16,9 +16,9 @@
       sub: "A little about your child.",
       fields: [
         text("child", "197040805", "Child's Name", { placeholder: "Your child's full name", min: 2 }),
-        { type: "radio", name: "age", entry: "88786527", label: "Child's Age", required: true, cols: 2,
+        { type: "select", name: "age", entry: "88786527", label: "Child's Age", required: true, placeholder: "Select age",
           options: opts(["7–8 Years", "9–10 Years", "11–12 Years", "13–14 Years", "15–16 Years", "17–18 Years"]) },
-        { type: "radio", name: "grade", entry: "1100014072", label: "Current Grade", required: true, cols: 3,
+        { type: "select", name: "grade", entry: "1100014072", label: "Current Grade", required: true, placeholder: "Select grade",
           options: opts(["Grade 3", "Grade 4", "Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12"]) },
         text("school", "636183633", "School Name", { placeholder: "Your child's school", min: 2 }),
         text("phone", "341443992", "WhatsApp / Mobile Number", { kind: "tel", autocomplete: "tel", placeholder: "10-digit mobile number", hint: "We'll use this to share batch and fee details." }),
@@ -79,7 +79,7 @@
     if (isEmpty) {
       if (!f.required) return "";
       if (f.requiredMessage) return f.requiredMessage;
-      if (f.type === "radio" || f.type === "tiles" || f.type === "checkbox") return "Please choose an option.";
+      if (f.type === "radio" || f.type === "select" || f.type === "tiles" || f.type === "checkbox") return "Please choose an option.";
       return "This field is required.";
     }
     if (f.type === "text" || f.type === "textarea") {
@@ -126,6 +126,15 @@
       '<p class="error" id="' + errId(f) + '" hidden></p></fieldset>';
   }
 
+  function renderSelect(f) {
+    var id = "f-" + f.name;
+    var ph = '<option value="" selected>' + esc(f.placeholder || "Select") + "</option>";
+    var os = f.options.map(function (o) { return '<option value="' + esc(o.value) + '">' + esc(o.value) + "</option>"; }).join("");
+    return '<div class="field" id="field-' + f.name + '"><label for="' + id + '">' + esc(f.label) + " " + reqMark(f) + "</label>" +
+      '<select class="input select" id="' + id + '" name="' + f.name + '" aria-describedby="' + errId(f) + '"' + (f.required ? ' aria-required="true"' : "") + ">" + ph + os + "</select>" +
+      '<p class="error" id="' + errId(f) + '" hidden></p></div>';
+  }
+
   function renderInput(f) {
     var id = "f-" + f.name;
     var common = ' id="' + id + '" name="' + f.name + '" aria-describedby="' + (f.hint ? "hint-" + f.name + " " : "") + errId(f) + '"' +
@@ -141,7 +150,7 @@
 
   function renderStep(step, i) {
     var body = step.fields.map(function (f) {
-      var h = f.type === "text" || f.type === "textarea" ? renderInput(f) : renderChoice(f);
+      var h = f.type === "text" || f.type === "textarea" ? renderInput(f) : f.type === "select" ? renderSelect(f) : renderChoice(f);
       return f.cta ? '<div class="cta-box">' + h + "</div>" : h;
     }).join("");
     var twoUp = i === 0 || i === 1;
@@ -164,11 +173,11 @@
     var box = $("field-" + f.name), p = $(errId(f));
     box.classList.toggle("has-error", !!msg);
     p.hidden = !msg; p.textContent = msg || "";
-    var controls = box.querySelectorAll("input, textarea");
+    var controls = box.querySelectorAll("input, textarea, select");
     Array.prototype.forEach.call(controls, function (c) { if (msg) c.setAttribute("aria-invalid", "true"); else c.removeAttribute("aria-invalid"); });
   }
   function readValue(f) {
-    if (f.type === "text" || f.type === "textarea") return $("f-" + f.name).value;
+    if (f.type === "text" || f.type === "textarea" || f.type === "select") return $("f-" + f.name).value;
     var checked = Array.prototype.filter.call(form.querySelectorAll('input[name="' + f.name + '"]'), function (i) { return i.checked; })
       .map(function (i) { return i.value; });
     return f.type === "radio" ? checked[0] || "" : checked;
@@ -184,7 +193,7 @@
       if (msg && !firstBad) firstBad = f;
     });
     if (firstBad && focus) {
-      var el = form.querySelector('#field-' + firstBad.name + " input, #field-" + firstBad.name + " textarea");
+      var el = form.querySelector("#field-" + firstBad.name + " input, #field-" + firstBad.name + " textarea, #field-" + firstBad.name + " select");
       if (el) { el.focus(); el.scrollIntoView({ block: "center", behavior: "smooth" }); }
     }
     return !firstBad;
