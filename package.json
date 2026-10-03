@@ -1,0 +1,19 @@
+{
+  "name": "edlumina-registration",
+  "version": "1.0.0",
+  "description": "EdLumina Excellence Centre registration page with a local Express + Nodemailer (SMTP) backend",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev": "node --watch --env-file=.env server.js",
+    "test": "node test/run.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "nodemailer": "^10.0.13"
+  }
+}

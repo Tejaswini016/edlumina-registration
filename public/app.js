@@ -1,13 +1,11 @@
 /* EdLumina registration form.
-   Field definitions mirror the Google Form (entry IDs and option strings are exact, because
-   Google rejects radio/checkbox values that don't match an option). */
+   Field definitions mirror the Google Form; option strings are exact because the server checks
+   them. The browser posts JSON to /api/register (server.js), which validates it and emails it over SMTP (Nodemailer). */
 (function () {
   "use strict";
 
-  var GOOGLE_FORM_ACTION =
-    "https://docs.google.com/forms/d/e/1FAIpQLSfPTaBer7fr1RsqartwBx4HNs1OWoX29X5MWq6ww-psYIf-YQ/formResponse";
-  var PROGRAMS_URL = "https://edluminaexcellencecenter.com/#programs";
-  var SUBMIT_TIMEOUT_MS = 20000;
+  var API_URL = "/api/register";
+  var SUBMIT_TIMEOUT_MS = 30000;
 
   var text = function (name, entry, label, o) { return Object.assign({ type: "text", name: name, entry: entry, label: label, required: true }, o); };
   var opts = function (a) { return a.map(function (v) { return typeof v === "string" ? { value: v } : v; }); };
@@ -223,27 +221,30 @@
   function banner(msg) { var b = $("banner"); b.hidden = !msg; b.textContent = msg || ""; }
 
   function buildPayload() {
-    var fd = new FormData();
-    ALL_FIELDS.forEach(function (f) {
-      var v = state[f.name];
-      var list = Array.isArray(v) ? v : [v];
-      list.forEach(function (item) {
-        if (item === "" || item == null) return;
-        fd.append("entry." + f.entry, f.kind === "tel" ? cleanPhone(item) : String(item).trim());
-      });
-    });
-    return fd;
+    var body = {};
+    ALL_FIELDS.forEach(function (f) { body[f.name] = state[f.name]; });
+    body.website = ""; // honeypot, left empty by real users
+    return body;
   }
 
-  /* Google Forms sends no CORS headers, so from the browser the response is opaque: we cannot read
-     the HTTP status. Because every required field and option is validated against the form's exact
-     values first, an accepted request means Google received it; a network/timeout error rejects, and
-     we show an error instead of success. */
+  var GENERIC_ERROR = "Something went wrong while submitting your registration. Please try again.";
+
+  /* Resolves only when the server reports success (the email was accepted by the email service);
+     otherwise rejects with a user-facing message. Entered data is kept so nothing needs retyping. */
   function send() {
     var ctl = new AbortController();
     var t = setTimeout(function () { ctl.abort(); }, SUBMIT_TIMEOUT_MS);
-    return fetch(GOOGLE_FORM_ACTION, { method: "POST", mode: "no-cors", body: buildPayload(), signal: ctl.signal })
-      .finally(function () { clearTimeout(t); });
+    return fetch(API_URL, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(buildPayload()), signal: ctl.signal,
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (j) {
+        if (res.ok && j.success === true) return j;
+        var e = new Error("rejected");
+        e.userMessage = res.status === 429 && j.message ? j.message : GENERIC_ERROR;
+        throw e;
+      });
+    }).finally(function () { clearTimeout(t); });
   }
 
   function setSubmitting(on) {
@@ -271,9 +272,9 @@
       if (!validateStep(i, false)) { show(i, true); banner("Please fix the highlighted fields to continue."); validateStep(i, true); return; }
     }
     setSubmitting(true);
-    send().then(onSuccess, function () {
+    send().then(onSuccess, function (err) {
       setSubmitting(false);
-      banner("We couldn't send your details. Please check your connection and try again, or call us on 8712443601.");
+      banner(err && err.userMessage ? err.userMessage : GENERIC_ERROR);
     });
   });
 
