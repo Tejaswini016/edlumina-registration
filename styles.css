@@ -223,12 +223,20 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 
 /* footer */
 .foot { background: var(--navy-3); color: var(--mist); padding: 36px 0 20px; font-size: 14px; }
-.foot__grid { display: grid; gap: 22px; }
+.foot__grid { display: grid; gap: 28px; }
 .foot__logo { background: var(--white); border-radius: 10px; padding: 6px 10px; height: 52px; width: auto; }
 .foot p { margin: 10px 0 0; }
 .foot address { font-style: normal; }
 .foot a { color: var(--white); }
-.foot__links { margin-top: 0 !important; }
+.foot__h { font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); margin: 0 0 12px; }
+.foot__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.foot__list a { text-decoration: none; overflow-wrap: anywhere; }
+.foot__list a:hover, .foot a:hover { color: var(--amber); }
+.foot__soc-sub { margin: 0 0 12px !important; color: var(--slate); font-size: 13px; }
+.social { list-style: none; margin: 0; padding: 0; display: flex; gap: 12px; }
+.social a { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--navy-2); background: var(--navy-2); color: var(--white); transition: background .2s, color .2s, transform .2s; }
+.social a:hover { background: var(--amber); border-color: var(--amber); color: var(--navy); transform: translateY(-3px); }
+.social svg { width: 22px; height: 22px; }
 .foot__copy { text-align: center; margin-top: 28px !important; color: var(--slate); font-size: 13px; }
 
 /* tablet */
@@ -239,7 +247,7 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
   .tiles { grid-template-columns: repeat(3, 1fr); }
   .band__grid { grid-template-columns: repeat(4, 1fr); }
   .path { grid-template-columns: 1fr 1fr; }
-  .foot__grid { grid-template-columns: 1.2fr 1.4fr 1fr; }
+  .foot__grid { display: grid; gap: 28px; }
 }
 
 /* desktop: copy left, form right (as in the reference layout) */
@@ -252,6 +260,7 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
   .pcard:nth-child(n+4) { grid-column: span 3; }
   .mascot { display: block; margin-top: 8px; }
   .how { grid-template-columns: repeat(3, 1fr); }
+  .foot__grid { grid-template-columns: 1.1fr 1.3fr 1.5fr 1fr; gap: 36px; }
   .path { grid-template-columns: repeat(4, 1fr); padding-top: 60px; }
   .path li { padding: 54px 18px 20px; text-align: center; min-height: 150px; }
   .path li:nth-child(1) { margin-top: 90px; }
