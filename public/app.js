@@ -47,11 +47,11 @@
       title: "Program & Schedule",
       sub: "Choose what fits your family.",
       fields: [
-        { type: "radio", name: "program", entry: "1612402667", label: "Which program would you prefer?", required: true,
+        { type: "select", name: "program", entry: "1612402667", label: "Which program would you prefer?", required: true, placeholder: "Select program",
           options: opts(["After-School Program", "Weekend Program", "Either — Based on Availability", "Not Sure — Please Suggest"]) },
-        { type: "checkbox", name: "days", entry: "86517794", label: "Preferred Days", required: true, cols: 2,
+        { type: "select", asArray: true, name: "days", entry: "86517794", label: "Preferred Days", required: true, placeholder: "Select day",
           options: opts(["Sunday"]) },
-        { type: "radio", name: "start", entry: "1575758133", label: "When are you planning to start?", required: true,
+        { type: "select", name: "start", entry: "1575758133", label: "When are you planning to start?", required: true, placeholder: "Select start time",
           options: opts(["Immediately", "Within 1–2 weeks", "Just exploring for now"]) },
       ],
     },
@@ -177,7 +177,8 @@
     Array.prototype.forEach.call(controls, function (c) { if (msg) c.setAttribute("aria-invalid", "true"); else c.removeAttribute("aria-invalid"); });
   }
   function readValue(f) {
-    if (f.type === "text" || f.type === "textarea" || f.type === "select") return $("f-" + f.name).value;
+    if (f.type === "select") { var sv = $("f-" + f.name).value; return f.asArray ? (sv ? [sv] : []) : sv; }
+    if (f.type === "text" || f.type === "textarea") return $("f-" + f.name).value;
     var checked = Array.prototype.filter.call(form.querySelectorAll('input[name="' + f.name + '"]'), function (i) { return i.checked; })
       .map(function (i) { return i.value; });
     return f.type === "radio" ? checked[0] || "" : checked;
